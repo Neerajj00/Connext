@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User{
+  id String @id @default(cuid())
+  email String @unique
+  username String @unique
+  clerkId String?
+  bio String?
+  image String?
+  location String?
+  website String?
+
+  createdAt DateTime @default(now()) // user is member since 2020
+  updatedAt DateTime @updatedAt
+
+  // relations
+  posts Post[]
+  comments Comment[]
+  likes Like[]
+
+  followers Follows[] @relation("following")
+  following Follows[] @relation("follower")
+
+  notifications Notification[] @relation("userNotifications") // notification received by a user
+  notificationsCreated Notification[] @relation("notificationCreator") // notification triggered by a user
+
+}
