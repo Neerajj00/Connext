@@ -81,5 +81,5 @@ model Like{
   post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@index([userId,postId]) // composite index for faster queries
-  @@unique([userId,postId])
+  @@unique([userId,postId]) // this prevents same user likign post twice
 }
