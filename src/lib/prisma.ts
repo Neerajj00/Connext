@@ -1,5 +1,5 @@
 // lib/prisma.ts
-import { PrismaClient } from "@/generated/prisma"; // ✅ custom path
+import { PrismaClient } from "@prisma/client";
 
 const prismaClientSingleton = () => {
   return new PrismaClient();
