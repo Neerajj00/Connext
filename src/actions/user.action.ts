@@ -101,6 +101,7 @@ export async function getRandomUser(){
 export async function toggleFollow(targetUserId: string) {
     try {
         const userId = await getDbUserId();
+        if(!userId) throw new Error("User not authenticated");
         if(userId === targetUserId) {
             throw new Error("You cannot follow yourself");
         }
