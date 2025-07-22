@@ -2,6 +2,11 @@
 
 ![Preview Image](public/thumbnail.png)
 
+---
+## 🔗 Live Website
+
+[connext](https://connext-rho.vercel.app)
+
 ## 🧱 Tech Stack
 - **Next.js App Router**
 - **PostgreSQL** (Postgres)
