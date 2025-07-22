@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 import { getDbUserId } from "./user.action";
 import { revalidatePath } from "next/cache";
 
-export async function createPost(content:string, imageUrl:string){
+export async function createPost(content:string, imageUrl:string , imageKey: string) {
     try {
         const userId = await getDbUserId();
         if(!userId) return;
@@ -12,6 +12,7 @@ export async function createPost(content:string, imageUrl:string){
             data:{
                 content,
                 image: imageUrl,
+                imageKey,
                 authorId: userId
             }
         })
@@ -199,16 +200,18 @@ export async function deletePost(postId: string) {
   
       const post = await prisma.post.findUnique({
         where: { id: postId },
-        select: { authorId: true },
+        select: { 
+          authorId: true,
+          imageKey: true, // to delete the image if exists
+        },
       });
   
       if (!post) throw new Error("Post not found");
       if (post.authorId !== userId) throw new Error("Unauthorized - no delete permission");
   
-      // 1. Delete the image from UploadThing if a key exists
-      // if (imageKey) {
-      //   await utapi.deleteFiles(imageKey);
-      // }
+      if (post.imageKey) {
+        await utapi.deleteFiles(post.imageKey);
+      }
 
       await prisma.post.delete({
         where: { id: postId },

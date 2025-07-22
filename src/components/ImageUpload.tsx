@@ -3,11 +3,17 @@
 import { UploadDropzone } from "@/lib/uploadthing";
 import { XIcon } from "lucide-react";
 
+interface UploadedFile {
+  url: string;
+  key: string;
+}
+
 interface ImageUploadProps {
-  onChange: (url: string) => void;
+  onChange: (file: UploadedFile | "") => void;
   value: string;
   endpoint: "postImage";
 }
+
 
 function ImageUpload({ endpoint, onChange, value }: ImageUploadProps) {
   if (value) {
@@ -32,7 +38,13 @@ function ImageUpload({ endpoint, onChange, value }: ImageUploadProps) {
     <UploadDropzone
       endpoint={endpoint}
       onClientUploadComplete={(res) => {
-        onChange(res?.[0].url);
+        const file = res?.[0];
+        if (file) {
+          onChange({
+            url: file.url,
+            key: file.key,
+          });
+        }
       }}
       onUploadError={(error: Error) => {
         console.log(error);
