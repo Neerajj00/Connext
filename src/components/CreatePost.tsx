@@ -27,6 +27,7 @@ function CreatePost() {
       if (result?.success) {
         setContent("");
         setImageUrl("");
+        setImageKey("");
         setShowImageUpload(false);
         toast.success("Post uploaded successfully");
       }
@@ -61,9 +62,15 @@ function CreatePost() {
                 endpoint="postImage"
                 value={imageUrl}
                 onChange={(file) => {
-                  setImageUrl(file.url); // for preview
-                  setImageKey(file.key); // for backend
-                  if (!file) setShowImageUpload(false);
+                  if (!file) {
+                    setImageUrl("");
+                    setImageKey("");
+                    setShowImageUpload(false);
+                    return;
+                  }
+                
+                  setImageUrl(file.url);
+                  setImageKey(file.key);
                 }}
               />
             </div>
