@@ -43,7 +43,8 @@ model Post{
   id        String    @id @default(cuid())
   authorId String
   content String?
-  image String?
+  image     String?   // The public URL for the image
+  imageKey  String?   // The unique key for deletion
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 

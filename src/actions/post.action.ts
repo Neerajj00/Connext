@@ -189,6 +189,10 @@ export async function createComment(postId: string, content: string) {
     }
 }
 
+
+import { UTApi } from "uploadthing/server";
+const utapi = new UTApi();
+
 export async function deletePost(postId: string) {
     try {
       const userId = await getDbUserId();
@@ -201,6 +205,11 @@ export async function deletePost(postId: string) {
       if (!post) throw new Error("Post not found");
       if (post.authorId !== userId) throw new Error("Unauthorized - no delete permission");
   
+      // 1. Delete the image from UploadThing if a key exists
+      // if (imageKey) {
+      //   await utapi.deleteFiles(imageKey);
+      // }
+
       await prisma.post.delete({
         where: { id: postId },
       });
