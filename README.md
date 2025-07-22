@@ -1,5 +1,7 @@
 # 🚀 Project Highlights
 
+![Preview Image](public/thumbnail.png)
+
 ## 🧱 Tech Stack
 - **Next.js App Router**
 - **PostgreSQL** (Postgres)
