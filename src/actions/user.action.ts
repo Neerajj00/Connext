@@ -53,12 +53,18 @@ export async function getUserByClerkId(clerkId:string) {
 }
 
 export async function getDbUserId(){
-    const {userId:clerkId} = await auth();
-    if(!clerkId) return null;
+    try{
+        const {userId:clerkId} = await auth();
+        if(!clerkId) return null;
+    
+        const user = await getUserByClerkId(clerkId);
+        if(!user) throw new Error("User not found (user action.ts)");
 
-    const user = await getUserByClerkId(clerkId);
-    if(!user) throw new Error("User not found (user action.ts)");
-    return user.id;
+        return user.id;
+    }catch(error){
+        console.error("Error getting user ID:", error);
+        return null; // Return null if there's an error
+    }
 
 }
 
