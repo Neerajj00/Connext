@@ -39,7 +39,9 @@ export async function getProfileByUsername(username: string) {
 export async function getUserPosts(userId: string) {
   try {
     const posts = await prisma.post.findMany({
-      where: { authorId: userId },
+      where: {
+        authorId: userId,
+      },
       include: {
         author: {
           select: {
@@ -71,8 +73,8 @@ export async function getUserPosts(userId: string) {
         },
         _count: {
           select: {
-            comments: true,
             likes: true,
+            comments: true,
           },
         },
       },
@@ -80,10 +82,11 @@ export async function getUserPosts(userId: string) {
         createdAt: "desc",
       },
     });
+
     return posts;
   } catch (error) {
     console.error("Error fetching user posts:", error);
-    return [];
+    throw new Error("Failed to fetch user posts");
   }
 }
 
