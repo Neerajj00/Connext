@@ -21,8 +21,8 @@ export const ourFileRouter = {
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
-      console.log("Upload complete for userId:", metadata.userId);
-      console.log("file details: ", file); // This would log the file object
+      // console.log("Upload complete for userId:", metadata.userId);
+      // console.log("file details: ", file); // This would log the file object
       try {
         return { fileUrl: file.ufsUrl };
       } catch (error) {
