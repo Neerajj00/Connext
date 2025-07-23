@@ -26,28 +26,31 @@ type User = Awaited<ReturnType<typeof getProfileByUsername>>;
 type Posts = Awaited<ReturnType<typeof getUserPosts>>;
 
 interface ProfilePageClientProps {
-  user: NonNullable<User>;
+  profileUser: NonNullable<User>; // renamed from `user`
   posts: Posts;
   likedPosts: Posts;
   isFollowing: boolean;
+  loggedInUserId: string | null; // renamed from `currentUserId`
 }
 
 function ProfilePageClient({
-  user,
+  profileUser,
   posts,
   likedPosts,
-  isFollowing: initialIsFollwoing,
+  isFollowing: initialIsFollowing,
+  loggedInUserId,
 }: ProfilePageClientProps) {
   const { user: currentUser } = useUser();
-  const [showEditDialog, setShowEditDialog] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(initialIsFollwoing);
+
+  const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
   const [isUpdatingFollow, setIsUpdatingFollow] = useState(false);
 
+  const [showEditDialog, setShowEditDialog] = useState(false);
   const [editForm, setEditForm] = useState({
-    name: user.name || "",
-    bio: user.bio || "",
-    location: user.location || "",
-    website: user.website || "",
+    name: profileUser.name || "",
+    bio: profileUser.bio || "",
+    location: profileUser.location || "",
+    website: profileUser.website || "",
   });
 
   const handleEditSubmit = async () => {
@@ -68,7 +71,7 @@ function ProfilePageClient({
 
     try {
       setIsUpdatingFollow(true);
-      await toggleFollow(user.id);
+      await toggleFollow(profileUser.id);
       setIsFollowing(!isFollowing);
     } catch (error) {
       toast.error("Failed to update follow status");
@@ -78,10 +81,10 @@ function ProfilePageClient({
   };
 
   const isOwnProfile =
-    currentUser?.username === user.username ||
-    currentUser?.emailAddresses[0].emailAddress.split("@")[0] === user.username;
+    currentUser?.username === profileUser.username ||
+    currentUser?.emailAddresses[0].emailAddress.split("@")[0] === profileUser.username;
 
-  const formattedDate = format(new Date(user.createdAt), "MMMM yyyy");
+  const formattedDate = format(new Date(profileUser.createdAt), "MMMM yyyy");
 
 
   return (
@@ -92,27 +95,27 @@ function ProfilePageClient({
             <CardContent className="pt-6">
               <div className="flex flex-col items-center text-center">
                 <Avatar className="w-24 h-24">
-                  <AvatarImage src={user.image ?? "/avatar.png"} />
+                  <AvatarImage src={profileUser.image ?? "/avatar.png"} />
                 </Avatar>
-                <h1 className="mt-4 text-2xl font-bold">{user.name ?? user.username}</h1>
-                <p className="text-muted-foreground">@{user.username}</p>
-                <p className="mt-2 text-sm">{user.bio}</p>
+                <h1 className="mt-4 text-2xl font-bold">{profileUser.name ?? profileUser.username}</h1>
+                <p className="text-muted-foreground">@{profileUser.username}</p>
+                <p className="mt-2 text-sm">{profileUser.bio}</p>
 
                 {/* PROFILE STATS */}
                 <div className="w-full mt-6">
                   <div className="flex justify-between mb-4">
                     <div>
-                      <div className="font-semibold">{user._count.following.toLocaleString()}</div>
+                      <div className="font-semibold">{profileUser._count.following.toLocaleString()}</div>
                       <div className="text-sm text-muted-foreground">Following</div>
                     </div>
                     <Separator orientation="vertical" />
                     <div>
-                      <div className="font-semibold">{user._count.followers.toLocaleString()}</div>
+                      <div className="font-semibold">{profileUser._count.followers.toLocaleString()}</div>
                       <div className="text-sm text-muted-foreground">Followers</div>
                     </div>
                     <Separator orientation="vertical" />
                     <div>
-                      <div className="font-semibold">{user._count.posts.toLocaleString()}</div>
+                      <div className="font-semibold">{profileUser._count.posts.toLocaleString()}</div>
                       <div className="text-sm text-muted-foreground">Posts</div>
                     </div>
                   </div>
@@ -141,24 +144,24 @@ function ProfilePageClient({
 
                 {/* LOCATION & WEBSITE */}
                 <div className="w-full mt-6 space-y-2 text-sm">
-                  {user.location && (
+                  {profileUser.location && (
                     <div className="flex items-center text-muted-foreground">
                       <MapPinIcon className="size-4 mr-2" />
-                      {user.location}
+                      {profileUser.location}
                     </div>
                   )}
-                  {user.website && (
+                  {profileUser.website && (
                     <div className="flex items-center text-muted-foreground">
                       <LinkIcon className="size-4 mr-2" />
                       <a
                         href={
-                          user.website.startsWith("http") ? user.website : `https://${user.website}`
+                          profileUser.website.startsWith("http") ? profileUser.website : `https://${profileUser.website}`
                         }
                         className="hover:underline"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        {user.website}
+                        {profileUser.website}
                       </a>
                     </div>
                   )}
@@ -195,7 +198,7 @@ function ProfilePageClient({
           <TabsContent value="posts" className="mt-6">
             <div className="space-y-6">
               {posts.length > 0 ? (
-                posts.map((post) => <PostCard key={post.id} post={post} dbUserId={user.id} />)
+                posts.map((post) => <PostCard key={post.id} post={post} loggedInUserId={loggedInUserId} />)
               ) : (
                 <div className="text-center py-8 text-muted-foreground">No posts yet</div>
               )}
@@ -205,7 +208,7 @@ function ProfilePageClient({
           <TabsContent value="likes" className="mt-6">
             <div className="space-y-6">
               {likedPosts.length > 0 ? (
-                likedPosts.map((post) => <PostCard key={post.id} post={post} dbUserId={user.id} />)
+                likedPosts.map((post) => <PostCard key={post.id} post={post} loggedInUserId={loggedInUserId} />)
               ) : (
                 <div className="text-center py-8 text-muted-foreground">No liked posts to show</div>
               )}
