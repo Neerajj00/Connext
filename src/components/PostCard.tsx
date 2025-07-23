@@ -76,10 +76,11 @@ function PostCard({ post, dbUserId }: { post: Post; dbUserId: string | null }) {
     try {
       setIsDeleting(true);
       const result = await deletePost(post.id);
-      if (result) {
+  
+      if (result.success) {
         toast.success("Post deleted successfully");
       } else {
-        throw new Error("Post deletion failed");
+        throw new Error(result.error || "Post deletion failed");
       }
     } catch (error) {
       toast.error("Failed to delete post");
@@ -87,6 +88,8 @@ function PostCard({ post, dbUserId }: { post: Post; dbUserId: string | null }) {
       setIsDeleting(false);
     }
   };
+  
+  
   return (
     <Card className="overflow-hidden">
       <CardContent className={"p-4 sm:p-6"}>
